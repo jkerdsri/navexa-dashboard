@@ -6,6 +6,7 @@ import type { Holding, DashboardFilters } from '@/types/navexa'
 interface Props {
   holdings: Holding[]
   filters: DashboardFilters
+  onSelectHolding: (h: Holding) => void
 }
 
 function fmt(n: number, decimals = 2): string {
@@ -50,7 +51,7 @@ const COLS = [
   { key: 'totalProfit',   label: 'Total Profit',     align: 'right' },
 ]
 
-export function ReturnsTable({ holdings, filters }: Props) {
+export function ReturnsTable({ holdings, filters, onSelectHolding }: Props) {
   const visible = holdings.filter(h => filters.showSold ? true : !h.isSold)
   const fx = (h: Holding, n: number) => filters.currency === 'AUD' ? n * h.fxRateToAud : n
 
@@ -87,18 +88,23 @@ export function ReturnsTable({ holdings, filters }: Props) {
               >
                 {/* Holding */}
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-md bg-slate-700 flex items-center justify-center text-xs font-bold text-white">
+                  <button
+                    onClick={() => onSelectHolding(h)}
+                    className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left group"
+                  >
+                    <div className="w-7 h-7 rounded-md bg-slate-700 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
                       {h.ticker.slice(0, 2)}
                     </div>
                     <div>
-                      <div className="font-medium text-white">{h.ticker}</div>
+                      <div className="font-medium text-emerald-400 group-hover:text-emerald-300 underline-offset-2 group-hover:underline">
+                        {h.ticker}
+                      </div>
                       <div className="text-xs text-slate-500 truncate max-w-[120px]">{h.name}</div>
                     </div>
                     {h.isSold && (
                       <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">SOLD</span>
                     )}
-                  </div>
+                  </button>
                 </td>
 
                 {/* Cost Basis */}

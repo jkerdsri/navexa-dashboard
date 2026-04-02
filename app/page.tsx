@@ -10,7 +10,8 @@ import { SectorChart } from '@/components/dashboard/SectorChart'
 import { DividendBarChart } from '@/components/dashboard/DividendBarChart'
 import { DividendGrowthChart } from '@/components/dashboard/DividendGrowthChart'
 import { FilterBar } from '@/components/dashboard/FilterBar'
-import type { NavexaPortfolio, DashboardFilters } from '@/types/navexa'
+import { HoldingDrawer } from '@/components/dashboard/holding/HoldingDrawer'
+import type { NavexaPortfolio, Holding, DashboardFilters } from '@/types/navexa'
 
 function fmtCurrency(n: number) {
   return new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }).format(n)
@@ -26,6 +27,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [filters, setFilters] = useState<DashboardFilters>({ showSold: false, currency: 'AUD' })
   const [dividendYear, setDividendYear] = useState(new Date().getFullYear())
+  const [selectedHolding, setSelectedHolding] = useState<Holding | null>(null)
 
   async function load() {
     setLoading(true)
@@ -166,13 +168,16 @@ export default function DashboardPage() {
         <DividendGrowthChart data={dividendGrowth} />
 
         {/* ── Returns Table ────────────────────────────────────────────── */}
-        <ReturnsTable holdings={holdings} filters={filters} />
+        <ReturnsTable holdings={holdings} filters={filters} onSelectHolding={setSelectedHolding} />
 
       </main>
 
       <footer className="border-t border-slate-800 mt-10 py-4 text-center text-xs text-slate-600">
         {portfolio.name} · Powered by Navexa + Yahoo Finance · {new Date().toLocaleDateString('en-AU')}
       </footer>
+
+      {/* ── Holding Detail Drawer ─────────────────────────────────────── */}
+      <HoldingDrawer holding={selectedHolding} onClose={() => setSelectedHolding(null)} />
     </div>
   )
 }
